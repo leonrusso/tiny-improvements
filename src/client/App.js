@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Col, Container, Row, Form, FormGroup, Input, Label, Card, CardBody, Button } from "reactstrap";
 import AwardCard from "./components/AwardCard";
+import KudosForm from "./components/KudosForm";
 
 class App extends Component {
 
@@ -28,19 +29,22 @@ class App extends Component {
                 {
                     id: 1,
                     title: "Best Boss Award!",
-                    comment: "Thanks for always looking out for us."
-                },
-                {
+                    comment: "Thanks for always looking out for us.",
+                    sender: "Fabian",
+                    receiver: "Leon"
+                }, {
                     id: 2,
                     title: "Longest Commute Award!",
-                    comment: "I can't believe Leslie makes it to work as often as she does."
-                },
-                {
+                    comment: "I can't believe Laura makes it to work as often as she does.",
+                    sender: "Archit",
+                    receiver: "Laura"
+                }, {
                     id: 3,
                     title: "Most likely to nap at work!",
-                    comment: "Maybe you need more coffee."
+                    comment: "Maybe you need more coffee.",
+                    sender: "Gobi",
+                    receiver: "Owen"
                 }
-
             ]
         }
     }
@@ -63,25 +67,12 @@ class App extends Component {
                         </Card>
                     </Col>
                     <Col md="12" lg="9">
-                        {this.state.awards.map(element => <AwardCard title={element.title} comment={element.comment} />)}
+                        {this.state.awards.map(elem => <AwardCard user={elem} />)}
                     </Col>
                 </Row>
                 <Row>
                     <Col md="12">
-                        <Form>
-                            <FormGroup>
-                                <Label>Give Kudos to</Label>
-                                <Input type="select">
-                                    {this.state.users.map(element => <option>{element.name}</option>)}
-                                </Input>
-                            </FormGroup>
-                            <FormGroup>
-                                <Input type="text" placeholder="Kudos Title" />
-                            </FormGroup>
-                            <FormGroup>
-                                <Input type="textarea" placeholder="Kudos text" />
-                            </FormGroup>
-                        </Form>
+                        <KudosForm users={this.state.users} />
                     </Col>
                 </Row>
             </Container>
