@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { Col, Container, Row, Form, FormGroup, Input, Label, Card, CardBody, Button } from "reactstrap";
 import AwardCard from "./components/AwardCard";
 import KudosForm from "./components/KudosForm";
+import PetCard from "./components/PetCard";
+import axios from 'axios';
+
 
 class App extends Component {
 
@@ -9,21 +12,21 @@ class App extends Component {
         super();
         this.state = {
             users: [
-                {
-                    userId: 45089,
-                    name: "Owen",
-                    position: "Captian of the Breakroom"
-                },
-                {
-                    userId: 223,
-                    name: "Brooke",
-                    position: "Winner of All Dance-Offs"
-                },
-                {
-                    userId: 6582,
-                    name: "Gobi",
-                    position: "King of Mid-Day Naps"
-                }
+                // {
+                //     userId: 45089,
+                //     name: "Owen",
+                //     position: "Captian of the Breakroom"
+                // },
+                // {
+                //     userId: 223,
+                //     name: "Brooke",
+                //     position: "Winner of All Dance-Offs"
+                // },
+                // {
+                //     userId: 6582,
+                //     name: "Gobi",
+                //     position: "King of Mid-Day Naps"
+                // }
             ],
             awards: [
                 {
@@ -49,6 +52,14 @@ class App extends Component {
         }
     }
 
+    componentDidMount = () => {
+        axios.get("/api/users").then(response =>
+            this.setState({
+                users: response.data
+            })
+        );
+    }
+
     render() {
         return (
             <Container>
@@ -58,6 +69,7 @@ class App extends Component {
                     </Col>
                 </Row>
                 <br />
+
                 <Row>
                     <Col md="12" lg="3">
                         <Card>
