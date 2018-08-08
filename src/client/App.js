@@ -1,118 +1,91 @@
 import React, { Component } from "react";
-import { Col, Container, Row, Form, FormGroup, Input, Label, Card, CardBody, Button } from "reactstrap";
-import AwardCard from "./components/AwardCard";
-import KudosForm from "./components/KudosForm";
-import PetCard from "./components/PetCard";
-import axios from 'axios';
-
+import { Col, Container, Row, Form, FormGroup, Input, Label, Button, Card, CardBody } from "reactstrap";
+import AwardCard from './components/AwardCard';
+import axios from "axios";
+import KudosForm from './components/KudosForm';
 
 class App extends Component {
+    state = {
+        users: [],
+        awards: [],
+        sender: "",
+        receiver: "",
+        comment: "",
+        title: ""
+    }
 
-    constructor() {
-        super();
-        this.state = {
-            kudosText: "",
-            kudosTitle: "",
-            receiver: "",
-            sender: "",
-            friends: [],
-            users: [
-                // {
-                //     userId: 45089,
-                //     name: "Owen",
-                //     position: "Captian of the Breakroom"
-                // },
-                // {
-                //     userId: 223,
-                //     name: "Brooke",
-                //     position: "Winner of All Dance-Offs"
-                // },
-                // {
-                //     userId: 6582,
-                //     name: "Gobi",
-                //     position: "King of Mid-Day Naps"
-                // }
-            ],
-            awards: []
-        }
+    updateSender = event => {
+        this.setState({ sender: event.target.value });
+    };
+
+    updateTitle = event => {
+        this.setState({ title: event.target.value });
+    };
+
+    updateReceiver = event => {
+        this.setState({ receiver: event.target.value });
+    };
+
+    updateComment = event => {
+        this.setState({ comment: event.target.value });
+    };
+
+    findReceiverId = () => {
+        const receiver = this.state.users.find(user => user.name === this.state.receiver);
+        return receiver.id;
+    }
+
+    findSenderId = () => {
+        const sender = this.state.users.find(user => user.name === this.state.sender);
+        return sender.id;
+    }
+
+    postData = () => {
+        axios.post("/api/kudos", {
+            Name: this.state.title,
+            Comment__c: this.state.comment,
+            Receiver__c: findReceiverId(),
+            Sender__c: findSenderId()
+        }).then(response => {
+            // this.setState({
+            //   awards: response.data
+            // })
+        })
     }
 
     componentDidMount = () => {
-        axios.get("/api/friends").then(response =>
-            this.setState({
-                friends: response.data
-            })
-        );
-        axios.get("/api/users").then(response =>
-            this.setState({
-                users: response.data
-            })
-        );
-        // axios.post("/api/kudos", {
-        //     id: 4,
-        //     title: "Loudest Easter Award",
-        //     comment: "Who chews carrots like that at work??"
-        // }).then(response => {
-        //     this.setState({
-        //         awards: response.data
-        //     })
-        // })
-    }
-    postKudo = () => {
-        axios.post("/api/kudos",
-            {
-                id: 5,
-                title: this.state.kudosTitle,
-                comment: this.state.kudosText,
-                receiver: this.state.receiver,
-                sender: this.state.sender,
-            })
+        axios.get("/api/kudos")
             .then(response => {
                 this.setState({
                     awards: response.data
                 })
             })
-    };
 
-    updateKudosText = event => {
-        this.setState({ kudosText: event.target.value })
-    };
-
-    updateKudosTitle = event => {
-        this.setState({ kudosTitle: event.target.value })
-    };
-
-    updateReceiver = event => {
-        this.setState({ receiver: event.target.value })
-    }
-
-    updateSender = event => {
-        this.setState({ sender: event.target.value })
+        axios.get("/api/users")
+            .then(response => {
+                this.setState({
+                    users: response.data,
+                    receiver: response.data[0],
+                    sender: response.data[0]
+                })
+            })
     }
 
     render() {
         return (
             <Container>
-                <hr />
-                <h1> 🙋🏽 Friend Space </h1>
-                <br />
-                <h4> My Friend List: </h4>
-                <br />
-                {this.state.friends.map((e, index) => (
-                    <Card key={index}>
-                        <CardBody >
-                            <h2> {e.name}</h2>
-                            <p> {e.location} </p>
-                        </CardBody>
-                    </Card>
-                ))}
                 <Row>
                     <Col md="12">
                         <h1>Tiny Progress</h1>
                     </Col>
                 </Row>
                 <br />
-
+                <Row>
+                    <Col md="12">
+                        <h1>Tiny Progress</h1>
+                    </Col>
+                </Row>
+                <br />
                 <Row>
                     <Col md="12" lg="3">
                         <Card>
@@ -122,19 +95,26 @@ class App extends Component {
                         </Card>
                     </Col>
                     <Col md="12" lg="9">
-                        {this.state.awards.map(award => <AwardCard title={award.title} comment={award.comment} receiver={award.receiver} sender={award.sender} />)}
+                        {this.state.awards.map(elem => (
+                            <AwardCard title={elem.name}
+                                sender={elem.sender__r.Name}
+                                receiver={elem.receiver__r.Name}
+                                key={elem.id}
+                                text={elem.comment__c} />
+                        ))}
                     </Col>
                 </Row>
                 <Row>
-                    <KudosForm
-                        postKudo={this.postKudo}
-                        updateKudosText={this.updateKudosText}
-                        updateKudosTitle={this.updateKudosTitle}
-                        updateReceiver={this.updateReceiver}
-                        updateSender={this.updateSender}
-                        receiver={this.state.users.map(user => <option> {user.name} </option>)}
-                        sender={this.state.users.map(user => <option> {user.name} </option>)}
-                    />
+                    <Col md="12">
+                        <KudosForm
+                            users={this.state.users}
+                            updateSender={this.updateSender}
+                            updateReceiver={this.updateReceiver}
+                            updateTitle={this.updateTitle}
+                            updateComment={this.updateComment}
+                            postData={this.postData}
+                        />
+                    </Col>
                 </Row>
             </Container>
         )
